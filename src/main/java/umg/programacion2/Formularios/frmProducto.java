@@ -29,6 +29,7 @@ public class frmProducto extends JFrame {
     private JTextField textFieldPrecio;
     private JLabel lblReportes; // Asegúrate de que este JLabel exista en el formulario
     private JComboBox<String> comboBoxReportes; // Especifica el tipo genérico para evitar advertencias
+    private JCheckBox checkBoxAgrupar;
 
     private ProductoService productoService;
 
@@ -39,7 +40,7 @@ public class frmProducto extends JFrame {
         // Configuración del JFrame
         setContentPane(panel1);
         setTitle("Gestión de Productos");
-        setSize(600, 300);
+        setSize(700, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -182,21 +183,33 @@ public class frmProducto extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    boolean agrupados = checkBoxAgrupar.isSelected();
                     int reporteSeleccionado = comboBoxReportes.getSelectedIndex();
                     List<ProductoModel> productos;
+
+                    // Si agrupar está seleccionado pero no es el reporte "Reporte General" (índice 0)
+                    if (agrupados && reporteSeleccionado != 0) {
+                        JOptionPane.showMessageDialog(null, "La función 'Agrupar' solo funciona con 'Reporte General'.");
+                        return; // Detener la ejecución si la condición no se cumple
+                    }
 
                     switch (reporteSeleccionado) {
                         case 0:
                             // Acción para "Reporte General"
-                            productos = productoService.obtenerTodosLosProductos();
+                            if (agrupados) {
+                                productos = productoService.obtenerTodosLosProductos();
+                            } else {
+                                productos = productoService.obtenerTodosLosProductosID();
+                            }
                             break;
                         case 1:
                             // Acción para "Existencias menores a 20 unidades"
                             productos = productoService.obtenerGenericos("existencia < 20");
                             break;
                         case 2:
+                            // Acción para productos de un país específico
                             String pais = comboBoxOrigen.getSelectedItem().toString();
-                            productos = productoService.obtenerGenericos("origen = '"+pais+"'"); // Esto es solo un ejemplo
+                            productos = productoService.obtenerGenericos("origen = '" + pais + "'");
                             break;
                         case 3:
                             // Acción para "Precios mayores a 2000"
@@ -214,8 +227,9 @@ public class frmProducto extends JFrame {
                             productos = null;
                     }
 
+                    // Generar el reporte si hay productos
                     if (productos != null) {
-                        new PdfReport().generateProductReport(productos, "C:\\PdfProgra\\reporte.pdf");
+                        new PdfReport().generateProductReport(productos, "C:\\PdfProgra\\reporte.pdf", agrupados);
                         JOptionPane.showMessageDialog(null, "Reporte generado en C:\\PdfProgra");
                     } else {
                         JOptionPane.showMessageDialog(null, "No hay productos para generar el reporte.");
@@ -225,6 +239,7 @@ public class frmProducto extends JFrame {
                 }
             }
         });
+
     }
 
     // Método para limpiar los campos del formulario

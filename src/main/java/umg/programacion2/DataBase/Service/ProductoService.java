@@ -36,4 +36,8 @@ public class ProductoService {
     public List<ProductoModel> obtenerGenericos(String condicion) throws Exception {
         return productoDao.obtenerGenericos(condicion);
     }
+
+    public List<ProductoModel> obtenerTodosLosProductosID() throws Exception {
+        return productoDao.obtenerTodosLosProductosID();
+    }
 }

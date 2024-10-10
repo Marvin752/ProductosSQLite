@@ -75,6 +75,28 @@ public class ProductoDao {
 
     public List<ProductoModel> obtenerTodosLosProductos() throws Exception {
         Connection connection = DatabaseConnection.getConnection(); // Usando DatabaseConnection
+        String query = "SELECT * FROM tb_producto ORDER BY origen";
+
+        PreparedStatement ps = connection.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
+        List<ProductoModel> productos = new ArrayList<>();
+
+        while (rs.next()) {
+            ProductoModel producto = new ProductoModel();
+            producto.setIdProducto(rs.getInt("id_producto"));
+            producto.setDescripcion(rs.getString("descripcion"));
+            producto.setOrigen(rs.getString("origen"));
+            producto.setPrecio(rs.getDouble("precio")); // Usando getDouble para el precio
+            producto.setExistencia(rs.getInt("existencia"));
+            productos.add(producto);
+        }
+
+        connection.close();
+        return productos;
+    }
+
+    public List<ProductoModel> obtenerTodosLosProductosID() throws Exception {
+        Connection connection = DatabaseConnection.getConnection(); // Usando DatabaseConnection
         String query = "SELECT * FROM tb_producto ORDER BY id_producto";
 
         PreparedStatement ps = connection.prepareStatement(query);
