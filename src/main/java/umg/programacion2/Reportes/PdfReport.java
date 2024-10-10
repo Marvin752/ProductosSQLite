@@ -145,6 +145,8 @@ public class PdfReport {
                 table.addCell(new Phrase(producto.getOrigen(), NORMAL_FONT));
             }*/
 
+            //No se comitea ayuda
+
             table.addCell(new Phrase(producto.getOrigen(), NORMAL_FONT));
 
             // Aquí añadimos el precio individual con dos decimales
